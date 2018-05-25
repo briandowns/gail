@@ -79,16 +79,21 @@ func main() {
 		path = defaultJailPath
 	}
 	opts := jail.Opts{
+		Path:     path + "/build",
 		Chdir:    true,
 		Hostname: id,
 		Name:     id,
-		Path:     path + "/build",
 	}
 	if _, err := jail.Jail(&opts); err != nil {
 		fmt.Println("error", err)
 		os.Exit(1)
 	}
-	cmd := exec.Command(os.Args[2], os.Args[3:]...)
+	var cmd *exec.Cmd
+	if len(os.Args) > 3 {
+		cmd = exec.Command(os.Args[2], os.Args[3:]...)
+	} else {
+		cmd = exec.Command(os.Args[2])
+	}
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
