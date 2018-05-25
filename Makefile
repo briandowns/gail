@@ -10,7 +10,7 @@ LDFLAGS = -ldflags "-X main.gitSHA=$(shell git rev-parse HEAD) -X main.version=$
 .PHONY:
 build: clean
 	if [ ! -d $(BINDIR) ]; then mkdir $(BINDIR); fi
-	$(GO) build -v -o $(BINDIR)/$(BINARY) $(LDFLAGS)
+	GOOS=freebsd GOARCH=amd64 $(GO) build -v -o $(BINDIR)/$(BINARY) $(LDFLAGS)
 
 .PHONY:
 test:

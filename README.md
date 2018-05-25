@@ -9,3 +9,19 @@ List contents of jail root
 ```sh
 gail ls
 ```
+
+```sh
+gail cat .cshrc
+```
+
+## Contributing
+
+Please feel free to open a PR!
+
+## License
+
+Jail source code is available under the BSD 3 clause [License](/LICENSE).
+
+## Contact
+
+[@bdowns328](http://twitter.com/bdowns328)
