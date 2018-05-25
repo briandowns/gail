@@ -41,6 +41,17 @@ Examples:
   %[3]s -i ls                  List contents of current directory and return JID
 `
 
+func usageFunc() {
+	w := os.Stderr
+	for _, arg := range os.Args {
+		if arg == "-h" {
+			w = os.Stdout
+			break
+		}
+	}
+	fmt.Fprintf(w, usage, version, gitSHA, name)
+}
+
 func main() {
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, os.Interrupt)
@@ -49,20 +60,15 @@ func main() {
 			os.Exit(1)
 		}
 	}()
-
-	flag.Usage = func() {
-		w := os.Stderr
-		for _, arg := range os.Args {
-			if arg == "-h" {
-				w = os.Stdout
-				break
-			}
-		}
-		fmt.Fprintf(w, usage, version, gitSHA, name)
+	if len(os.Args) < 2 {
+		usageFunc()
+		os.Exit(1)
 	}
+
+	flag.Usage = usageFunc
 	flag.BoolVar(&versionFlag, "v", false, "")
-	flag.StringVar(&pathFlag, "p", defaultJailPath, "")
 	flag.BoolVar(&idFlag, "i", false, "")
+	flag.StringVar(&pathFlag, "p", defaultJailPath, "")
 	flag.Parse()
 	if versionFlag {
 		fmt.Fprintf(os.Stdout, "version: %s - %s\n", version, gitSHA)
