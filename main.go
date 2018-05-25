@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/exec"
 	"os/signal"
 
 	"github.com/pborman/uuid"
@@ -20,7 +21,6 @@ var (
 
 var (
 	versionFlag bool
-	idFlag      bool
 	pathFlag    string
 )
 
@@ -33,12 +33,10 @@ Usage: %s [-v] [-h] [-i]
 Options:
   -h            help
   -v            version
-  -i            return JID
   -p            path to jail fs
 
 Examples: 
   %[3]s ls                     List contents of current directory
-  %[3]s -i ls                  List contents of current directory and return JID
 `
 
 func usageFunc() {
@@ -67,7 +65,6 @@ func main() {
 
 	flag.Usage = usageFunc
 	flag.BoolVar(&versionFlag, "v", false, "")
-	flag.BoolVar(&idFlag, "i", false, "")
 	flag.StringVar(&pathFlag, "p", defaultJailPath, "")
 	flag.Parse()
 	if versionFlag {
@@ -85,15 +82,15 @@ func main() {
 		Chdir:    true,
 		Hostname: id,
 		Name:     id,
-		Path:     path,
+		Path:     path + "/build",
 	}
-	j, err := jail.Jail(&opts)
-	if err != nil {
-		fmt.Println(err)
+	if _, err := jail.Jail(&opts); err != nil {
+		fmt.Println("error", err)
 		os.Exit(1)
 	}
-	if idFlag {
-		fmt.Println(j)
-	}
+	cmd := exec.Command(os.Args[2], os.Args[3:]...)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	os.Exit(0)
 }
